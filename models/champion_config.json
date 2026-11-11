@@ -1,0 +1,91 @@
+{
+  "project": "Email-Spam-Detection",
+  "stage": "6D",
+  "evaluation_timestamp": "2026-11-10T08:24:21.923138+00:00",
+  "champion_status": "PRE_DECLARED_AND_VERIFIED",
+  "candidate_name": "pipeline_b_linear_svc",
+  "pipeline_topology": "Pipeline B (Standard NLP Normalization + Sublinear TF-IDF)",
+  "classifier": "LinearSVC",
+  "exact_hyperparameters": {
+    "C": 2.0,
+    "loss": "hinge",
+    "max_iter": 5000,
+    "dual": true
+  },
+  "default_threshold": 0.0,
+  "frozen_calibrated_threshold": 0.0040852377135018,
+  "positive_class": "Spam (1)",
+  "negative_class": "Not Spam (0)",
+  "training_record_count": 2560,
+  "test_record_count": 641,
+  "stage6c_training_derived_metrics": {
+    "calibrated_f1": 0.929539,
+    "precision_spam": 0.971671,
+    "recall_spam": 0.890909,
+    "fpr": 0.004598,
+    "pr_auc_ap": 0.986517,
+    "confusion_matrix": {
+      "tn": 2165,
+      "fp": 10,
+      "fn": 42,
+      "tp": 343
+    }
+  },
+  "stage6d_unseen_test_metrics": {
+    "default_threshold": {
+      "threshold": 0.0,
+      "f1_spam": 0.968421052631579,
+      "precision_spam": 0.9787234042553191,
+      "recall_spam": 0.9583333333333334,
+      "fpr": 0.003669724770642202,
+      "confusion_matrix": {
+        "tn": 543,
+        "fp": 2,
+        "fn": 4,
+        "tp": 92
+      }
+    },
+    "calibrated_threshold": {
+      "threshold": 0.0040852377135018,
+      "f1_spam": 0.968421052631579,
+      "precision_spam": 0.9787234042553191,
+      "recall_spam": 0.9583333333333334,
+      "fpr": 0.003669724770642202,
+      "accuracy": 0.9906396255850234,
+      "confusion_matrix": {
+        "tn": 543,
+        "fp": 2,
+        "fn": 4,
+        "tp": 92
+      }
+    },
+    "average_precision": 0.9977957996090133,
+    "timing_benchmarks": {
+      "training_time_s": 12.995941700000003,
+      "batch_inference_time_ms_641": 3512.3524999999063,
+      "latency_ms_per_email": 5.479489079563036
+    }
+  },
+  "faster_alternative": {
+    "candidate_name": "pipeline_c_linear_svc",
+    "calibrated_test_f1": 0.9791666666666666,
+    "calibrated_test_fpr": 0.003669724770642202,
+    "test_average_precision": 0.9974459163403852,
+    "latency_ms_per_email": 2.01591123244833,
+    "speedup_factor_vs_champion": 2.72
+  },
+  "serialization_verification": {
+    "status": "PASS",
+    "probe_sample_size": 32,
+    "probe_source": "X_train[:32]",
+    "decision_scores_bitwise_match": true,
+    "default_predictions_match": true,
+    "calibrated_predictions_match": true
+  },
+  "dataset_integrity_checksums": {
+    "raw_dataset_md5": "cc161a4efd9534c8a32664a52942d097",
+    "cleaned_dataset_md5": "87ab383a0a2853ff148a0e61fb5f2e5d",
+    "train_split_indices_sha256": "84a9ef640ccc54711068d52c1f22d767aa800142c0f7b4822014855158e61d91",
+    "test_split_indices_sha256": "bb1d408a89a7f53177defd1e4cd11d1036cccb577e3bc670a13c0d170210a0f5"
+  }
+}

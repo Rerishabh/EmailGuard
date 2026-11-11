@@ -1,0 +1,7 @@
+candidate,pipeline,classifier,operating_threshold,threshold_type,threshold_value,accuracy,spam_precision,spam_recall,spam_f1,not_spam_precision,not_spam_recall,fpr,tn,fp,fn,tp,ap,training_time_s,inference_time_ms,latency_per_email_ms
+pipeline_b_linear_svc,Pipeline B (Standard NLP Normalization),LinearSVC,Default (tau = 0.000000),Default,0.0,0.99064,0.978723,0.958333,0.968421,0.992687,0.99633,0.00367,543,2,4,92,0.997796,12.9959,3512.35,5.4795
+pipeline_b_linear_svc,Pipeline B (Standard NLP Normalization),LinearSVC,Calibrated (tau = 0.004085),Calibrated,0.0040852377135018,0.99064,0.978723,0.958333,0.968421,0.992687,0.99633,0.00367,543,2,4,92,0.997796,12.9959,3512.35,5.4795
+pipeline_c_linear_svc,Pipeline C (Domain-Aware + Scaled Heuristics),LinearSVC,Default (tau = 0.000000),Default,0.0,0.99532,0.979381,0.989583,0.984456,0.998162,0.99633,0.00367,543,2,1,95,0.997446,6.7746,1292.2,2.0159
+pipeline_c_linear_svc,Pipeline C (Domain-Aware + Scaled Heuristics),LinearSVC,Calibrated (tau = 0.087686),Calibrated,0.0876861391187918,0.99376,0.979167,0.979167,0.979167,0.99633,0.99633,0.00367,543,2,2,94,0.997446,6.7746,1292.2,2.0159
+pipeline_a_knn,Pipeline A (Minimal Normalization),KNN,Default (tau = 0.500000),Default,0.5,0.98752,0.931373,0.989583,0.959596,0.998145,0.987156,0.012844,538,7,1,95,0.987526,2.7868,964.67,1.505
+pipeline_a_knn,Pipeline A (Minimal Normalization),KNN,Calibrated (tau = 0.678503),Calibrated,0.6785031750306262,0.9922,0.989247,0.958333,0.973545,0.992701,0.998165,0.001835,544,1,4,92,0.987526,2.7868,964.67,1.505

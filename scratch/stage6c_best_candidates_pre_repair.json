@@ -1,0 +1,204 @@
+{
+  "project": "Email-Spam-Detection",
+  "stage": "6C",
+  "training_records": 2560,
+  "test_partition_used": false,
+  "candidates": {
+    "pipeline_c_linear_svc": {
+      "pipeline": "Pipeline C",
+      "classifier": "LinearSVC",
+      "global_best_parameters": {
+        "C": 10.0,
+        "loss": "squared_hinge",
+        "heuristic_weight": 0.05,
+        "max_iter": 5000,
+        "dual": "auto"
+      },
+      "global_cv_metrics": {
+        "f1_spam_mean": 0.932324,
+        "f1_spam_std": 0.032569,
+        "precision_spam_mean": 0.962412,
+        "recall_spam_mean": 0.906494,
+        "fpr_mean": 0.006437,
+        "pr_auc_mean": 0.977138
+      },
+      "nested_oof_default_metrics": {
+        "f1_spam": 0.9302949061662198,
+        "precision_spam": 0.961218836565097,
+        "recall_spam": 0.9012987012987013,
+        "fpr": 0.006436781609195402,
+        "pr_auc_ap": 0.9717384366180865
+      },
+      "calibration_oof_metrics": {
+        "default_threshold": 0.0,
+        "selected_threshold": 0.08768613911879186,
+        "default_f1": 0.9345794392523366,
+        "calibrated_f1": 0.9266304347826088,
+        "default_precision": 0.9615384615384616,
+        "calibrated_precision": 0.9715099715099715,
+        "default_recall": 0.9090909090909091,
+        "calibrated_recall": 0.8857142857142857,
+        "default_fpr": 0.006436781609195402,
+        "calibrated_fpr": 0.004597701149425287,
+        "accuracy": 0.97890625,
+        "confusion_matrix": {
+          "tn": 2165,
+          "fp": 10,
+          "fn": 44,
+          "tp": 341
+        },
+        "satisfies_fpr_limit": true,
+        "fallback_activated": false
+      },
+      "timing_and_convergence": {
+        "mean_fit_time_s": 6.175688,
+        "mean_infer_time_s": 1.373545,
+        "latency_ms_per_email": 2.68271,
+        "convergence_rate": 1.0
+      },
+      "search_space_size": 48
+    },
+    "pipeline_b_linear_svc": {
+      "pipeline": "Pipeline B",
+      "classifier": "LinearSVC",
+      "global_best_parameters": {
+        "C": 2.0,
+        "loss": "hinge",
+        "max_iter": 5000,
+        "dual": true
+      },
+      "global_cv_metrics": {
+        "f1_spam_mean": 0.929246,
+        "f1_spam_std": 0.021571,
+        "precision_spam_mean": 0.972243,
+        "recall_spam_mean": 0.890909,
+        "fpr_mean": 0.004598,
+        "pr_auc_mean": 0.987326
+      },
+      "nested_oof_default_metrics": {
+        "f1_spam": 0.9282814614343707,
+        "precision_spam": 0.9689265536723164,
+        "recall_spam": 0.8909090909090909,
+        "fpr": 0.005057471264367816,
+        "pr_auc_ap": 0.9865173113208192
+      },
+      "calibration_oof_metrics": {
+        "default_threshold": 0.0,
+        "selected_threshold": 0.0040852377135018325,
+        "default_f1": 0.9282814614343707,
+        "calibrated_f1": 0.929539295392954,
+        "default_precision": 0.9689265536723164,
+        "calibrated_precision": 0.9716713881019831,
+        "default_recall": 0.8909090909090909,
+        "calibrated_recall": 0.8909090909090909,
+        "default_fpr": 0.005057471264367816,
+        "calibrated_fpr": 0.004597701149425287,
+        "accuracy": 0.9796875,
+        "confusion_matrix": {
+          "tn": 2165,
+          "fp": 10,
+          "fn": 42,
+          "tp": 343
+        },
+        "satisfies_fpr_limit": true,
+        "fallback_activated": false
+      },
+      "timing_and_convergence": {
+        "mean_fit_time_s": 10.720099,
+        "mean_infer_time_s": 2.412367,
+        "latency_ms_per_email": 4.71165,
+        "convergence_rate": 1.0
+      },
+      "search_space_size": 16
+    },
+    "pipeline_a_knn": {
+      "pipeline": "Pipeline A",
+      "classifier": "KNN",
+      "global_best_parameters": {
+        "n_neighbors": 3,
+        "weights": "distance",
+        "metric": "cosine"
+      },
+      "global_cv_metrics": {
+        "f1_spam_mean": 0.930568,
+        "f1_spam_std": 0.009905,
+        "precision_spam_mean": 0.955568,
+        "recall_spam_mean": 0.909091,
+        "fpr_mean": 0.007816,
+        "pr_auc_mean": 0.946218
+      },
+      "nested_oof_default_metrics": {
+        "f1_spam": 0.9271523178807947,
+        "precision_spam": 0.9459459459459459,
+        "recall_spam": 0.9090909090909091,
+        "fpr": 0.009195402298850575,
+        "pr_auc_ap": 0.9479166633292003
+      },
+      "calibration_oof_metrics": {
+        "default_threshold": 0.5,
+        "selected_threshold": 0.6785031750306262,
+        "default_f1": 0.9322709163346614,
+        "calibrated_f1": 0.9258241758241759,
+        "default_precision": 0.9538043478260869,
+        "calibrated_precision": 0.9825072886297376,
+        "default_recall": 0.9116883116883117,
+        "calibrated_recall": 0.8753246753246753,
+        "default_fpr": 0.007816091954022988,
+        "calibrated_fpr": 0.002758620689655172,
+        "accuracy": 0.97890625,
+        "confusion_matrix": {
+          "tn": 2169,
+          "fp": 6,
+          "fn": 48,
+          "tp": 337
+        },
+        "satisfies_fpr_limit": true,
+        "fallback_activated": false
+      },
+      "timing_and_convergence": {
+        "mean_fit_time_s": 2.325158,
+        "mean_infer_time_s": 0.727554,
+        "latency_ms_per_email": 1.421,
+        "convergence_rate": 1.0
+      },
+      "search_space_size": 20
+    }
+  },
+  "champion_recommendation": {
+    "candidate_name": "pipeline_c_linear_svc",
+    "pipeline": "Pipeline C (Domain-Aware + Scaled Heuristics)",
+    "classifier": "LinearSVC",
+    "exact_parameters": {
+      "C": 10.0,
+      "loss": "squared_hinge",
+      "heuristic_weight": 0.05,
+      "max_iter": 5000,
+      "dual": "auto"
+    },
+    "heuristic_weight": 0.05,
+    "selected_threshold": 0.08768613911879186,
+    "calibration_metrics": {
+      "f1_spam": 0.9266304347826088,
+      "precision_spam": 0.9715099715099715,
+      "recall_spam": 0.8857142857142857,
+      "fpr": 0.004597701149425287,
+      "accuracy": 0.97890625,
+      "confusion_matrix": {
+        "tn": 2165,
+        "fp": 10,
+        "fn": 44,
+        "tp": 341
+      }
+    },
+    "selection_rationale": "Achieved the highest calibrated Spam F1-Score (0.9266) while strictly satisfying the operational requirement of FPR <= 0.005 (0.46% false-positive rate on legitimate emails, only 10 false positives across 2175 Ham records). Sub-millisecond inference latency (2.6827 ms/email) and superior PR-AUC/Average Precision make it the most reliable production champion.",
+    "warnings_and_limitations": "Linear coordinate descent requires max_iter=5000 to ensure full numerical convergence on uncentered heuristic features."
+  },
+  "integrity": {
+    "dataset_spam_assassin_md5": "cc161a4efd9534c8a32664a52942d097",
+    "dataset_spam_assassin_cleaned_md5": "87ab383a0a2853ff148a0e61fb5f2e5d",
+    "train_split_indices_sha256": "84a9ef640ccc54711068d52c1f22d767aa800142c0f7b4822014855158e61d91",
+    "test_split_indices_sha256": "bb1d408a89a7f53177defd1e4cd11d1036cccb577e3bc670a13c0d170210a0f5",
+    "preprocessing_lines": 487,
+    "models_dir_clean": true
+  }
+}
