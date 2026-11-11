@@ -20,10 +20,12 @@ dataset/archives/
 
 # Local datasets
 dataset/*.csv
+!dataset/spam_assassin_cleaned.csv
 
 # Model artifacts
 models/*.pkl
 models/*.joblib
+!models/champion_pipeline.joblib
 
 # Environment variables
 .env
