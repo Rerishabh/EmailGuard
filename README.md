@@ -3,6 +3,12 @@
 **EmailGuard** is a machine learning and Natural Language Processing (NLP) project for binary email classification (**Ham / Not Spam** vs. **Spam**). It combines RFC-822 MIME email parsing, comparative multi-pipeline benchmarking under a strict False Positive Rate constraint, and an interactive **Streamlit** application for live threat inspection and evaluation visualization.
 
 <p align="center">
+  <a href="https://emailguard-rishabh.streamlit.app/">
+    <img src="https://img.shields.io/badge/🚀_Live_Demo-EmailGuard-brightgreen?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/assets/banner.png"
        alt="EmailGuard - Intelligent Email Spam Detection"
        width="100%">
@@ -24,10 +30,12 @@
 </p>
 
 ---
+## 🚀 Live Demo
 
-## Live Demo
+Try EmailGuard here:
 
-[Live Application: Add deployment link here]
+**[Launch EmailGuard](https://emailguard-rishabh.streamlit.app/)**
+
 
 The Streamlit dashboard (`app/app.py`) organizes inspection and empirical evaluation into four interactive tabs:
 
