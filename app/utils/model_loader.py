@@ -8,7 +8,9 @@ trained strictly on the verified 2,560-sample training partition.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+import shutil
 import tempfile
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
@@ -63,9 +65,39 @@ def _get_writable_nltk_dir() -> Path:
     )
 
 
+def _enforce_private_permissions(root_dir: Path) -> None:
+    """Enforce owner-only permissions (0o700 dirs, 0o600 files) for NLTK security checks."""
+    os.chmod(root_dir, 0o700)
+    for current_root, dir_names, file_names in os.walk(root_dir):
+        current_path = Path(current_root)
+        os.chmod(current_path, 0o700)
+        for dir_name in dir_names:
+            os.chmod(current_path / dir_name, 0o700)
+        for file_name in file_names:
+            os.chmod(current_path / file_name, 0o600)
+
+
+def _prepare_private_nltk_dir(bundled_dir: Path) -> Path:
+    """Copy bundled NLTK stopwords into a private temp directory with strict permissions."""
+    uid_suffix = f"_{os.getuid()}" if hasattr(os, "getuid") else ""
+    private_root = Path(tempfile.gettempdir()) / f"emailguard_nltk_data{uid_suffix}"
+    target_stopwords = private_root / "corpora" / "stopwords"
+    source_stopwords = bundled_dir / "corpora" / "stopwords"
+
+    if not (target_stopwords / "english").is_file():
+        private_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        (private_root / "corpora").mkdir(mode=0o700, parents=True, exist_ok=True)
+        shutil.copytree(source_stopwords, target_stopwords, dirs_exist_ok=True)
+        _enforce_private_permissions(private_root)
+    else:
+        os.chmod(private_root, 0o700)
+
+    return private_root
+
+
 @st.cache_resource(show_spinner=False)
 def ensure_nltk_stopwords() -> str:
-    """Ensure the NLTK English stopwords corpus is available via bundled resources or fallback download."""
+    """Ensure the NLTK English stopwords corpus is available via a private copy of bundled resources."""
     import nltk
     from nltk.corpus import stopwords
 
@@ -80,20 +112,24 @@ def ensure_nltk_stopwords() -> str:
     )
 
     if bundled_dir is not None:
-        bundled_str = str(bundled_dir)
-        if bundled_str not in nltk.data.path:
-            nltk.data.path.insert(0, bundled_str)
         try:
+            private_dir = _prepare_private_nltk_dir(bundled_dir)
+            private_str = str(private_dir)
+            if private_str not in nltk.data.path:
+                nltk.data.path.insert(0, private_str)
+
             found = nltk.data.find("corpora/stopwords")
             words = stopwords.words("english")
-            if not words:
-                raise RuntimeError("Bundled English stopwords list is empty.")
+            if len(words) != 198:
+                raise RuntimeError(
+                    f"Expected 198 English stopwords in private corpus, got {len(words)}."
+                )
             return str(found)
         except Exception as exc:
             raise RuntimeError(
                 f"Bundled NLTK 'stopwords' corpus was found at '{bundled_dir}', "
-                f"but failed to load ({type(exc).__name__}: {exc}). "
-                f"nltk.data.path={nltk.data.path}"
+                f"but failed to load from private temporary directory "
+                f"({type(exc).__name__}: {exc}). nltk.data.path={nltk.data.path}"
             ) from exc
 
     # 2. Check whether stopwords corpus is already available in existing nltk.data.path
