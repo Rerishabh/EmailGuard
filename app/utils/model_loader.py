@@ -34,7 +34,7 @@ PIPELINE_C_CALIBRATED_THRESHOLD: float = 0.0876861391187918
 EXPECTED_TRAIN_RECORD_COUNT: int = 2560
 
 
-BUNDLED_NLTK_DATA_DIR = Path("app") / "resources" / "nltk_data"
+BUNDLED_NLTK_DATA_DIR = Path(__file__).resolve().parent.parent / "resources" / "nltk_data"
 
 
 def get_project_root() -> Path:
@@ -65,37 +65,51 @@ def _get_writable_nltk_dir() -> Path:
 
 @st.cache_resource(show_spinner=False)
 def ensure_nltk_stopwords() -> str:
-    """Ensure the NLTK English stopwords corpus is available via bundled resources or one-time download."""
+    """Ensure the NLTK English stopwords corpus is available via bundled resources or fallback download."""
     import nltk
     from nltk.corpus import stopwords
 
-    # 1. Prefer bundled official NLTK stopwords corpus in app/resources/nltk_data
-    bundled_dir = get_project_root() / BUNDLED_NLTK_DATA_DIR
-    if (bundled_dir / "corpora" / "stopwords" / "english").is_file():
+    # 1. Resolve bundled official NLTK stopwords corpus using absolute path from model_loader.py
+    bundled_candidates = [
+        BUNDLED_NLTK_DATA_DIR,
+        Path.cwd() / "app" / "resources" / "nltk_data",
+    ]
+    bundled_dir = next(
+        (d for d in bundled_candidates if (d / "corpora" / "stopwords" / "english").is_file()),
+        None,
+    )
+
+    if bundled_dir is not None:
         bundled_str = str(bundled_dir)
         if bundled_str not in nltk.data.path:
             nltk.data.path.insert(0, bundled_str)
+        try:
+            found = nltk.data.find("corpora/stopwords")
+            words = stopwords.words("english")
+            if not words:
+                raise RuntimeError("Bundled English stopwords list is empty.")
+            return str(found)
+        except Exception as exc:
+            raise RuntimeError(
+                f"Bundled NLTK 'stopwords' corpus was found at '{bundled_dir}', "
+                f"but failed to load ({type(exc).__name__}: {exc}). "
+                f"nltk.data.path={nltk.data.path}"
+            ) from exc
 
-    # 2. Check whether stopwords corpus is already resolvable and readable
+    # 2. Check whether stopwords corpus is already available in existing nltk.data.path
     try:
         found = nltk.data.find("corpora/stopwords")
-        _ = stopwords.words("english")
-        return str(found)
+        words = stopwords.words("english")
+        if words:
+            return str(found)
     except LookupError:
         pass
 
-    # 3. Fallback: download once into a writable local/cloud directory
+    # 3. Fallback: download once into a writable local/cloud directory only if bundled corpus is absent
     target_dir = _get_writable_nltk_dir()
     target_str = str(target_dir)
     if target_str not in nltk.data.path:
         nltk.data.path.insert(0, target_str)
-
-    try:
-        found = nltk.data.find("corpora/stopwords")
-        _ = stopwords.words("english")
-        return str(found)
-    except LookupError:
-        pass
 
     try:
         downloaded = nltk.download("stopwords", download_dir=target_str, quiet=True)
@@ -105,10 +119,10 @@ def ensure_nltk_stopwords() -> str:
         _ = stopwords.words("english")
         return str(found)
     except Exception as exc:
+        checked_paths = ", ".join(str(p) for p in bundled_candidates)
         raise RuntimeError(
-            "Failed to initialize required NLTK 'stopwords' corpus in "
-            f"'{target_str}' ({exc}). Ensure 'app/resources/nltk_data/corpora/stopwords' "
-            "is present or pre-install with: python -c \"import nltk; nltk.download('stopwords')\""
+            f"Bundled NLTK corpus not found (checked: {checked_paths}) and fallback download "
+            f"to '{target_str}' failed ({type(exc).__name__}: {exc})."
         ) from exc
 
 
