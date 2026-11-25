@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import tempfile
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import streamlit as st
@@ -38,6 +39,61 @@ def get_project_root() -> Path:
     return Path(__file__).resolve().parent.parent.parent
 
 
+def _get_writable_nltk_dir() -> Path:
+    """Return a writable NLTK data directory suitable for local Windows and Streamlit Cloud Linux."""
+    candidates = [
+        Path.home() / "nltk_data",
+        Path(tempfile.gettempdir()) / "nltk_data",
+    ]
+    for candidate in candidates:
+        try:
+            candidate.mkdir(parents=True, exist_ok=True)
+            probe = candidate / ".write_probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            return candidate
+        except OSError:
+            continue
+    raise RuntimeError(
+        "Unable to locate or create a writable directory for NLTK data "
+        f"(checked {', '.join(str(c) for c in candidates)})."
+    )
+
+
+@st.cache_resource(show_spinner=False)
+def ensure_nltk_stopwords() -> str:
+    """Ensure the NLTK English stopwords corpus is available, downloading once if missing."""
+    import nltk
+
+    try:
+        return str(nltk.data.find("corpora/stopwords"))
+    except LookupError:
+        pass
+
+    target_dir = _get_writable_nltk_dir()
+    target_str = str(target_dir)
+    if target_str not in nltk.data.path:
+        nltk.data.path.insert(0, target_str)
+
+    try:
+        return str(nltk.data.find("corpora/stopwords"))
+    except LookupError:
+        pass
+
+    try:
+        downloaded = nltk.download("stopwords", download_dir=target_str, quiet=True)
+        if not downloaded:
+            raise RuntimeError("nltk.download('stopwords') returned False.")
+        return str(nltk.data.find("corpora/stopwords"))
+    except Exception as exc:
+        raise RuntimeError(
+            "Failed to initialize required NLTK 'stopwords' corpus in "
+            f"'{target_str}'. If running in an offline or network-restricted "
+            "environment, pre-install the corpus with: "
+            "python -c \"import nltk; nltk.download('stopwords')\""
+        ) from exc
+
+
 @st.cache_data
 def load_champion_config() -> Dict[str, Any]:
     """Load and return the serialized champion configuration JSON.
@@ -61,6 +117,8 @@ def load_champion_model() -> Pipeline:
     Loads the frozen joblib artifact verified in Stage 6D.
     Cached across all user sessions using Streamlit resource cache.
     """
+    ensure_nltk_stopwords()
+
     root = get_project_root()
     model_file = root / CHAMPION_MODEL_PATH
     if not model_file.exists():
@@ -242,6 +300,8 @@ def predict_decision_margin(model: Pipeline, text: str) -> float:
     """
     if not isinstance(text, str):
         text = str(text) if text is not None else ""
+
+    ensure_nltk_stopwords()
 
     scores = model.decision_function([text])
     return float(scores[0])
